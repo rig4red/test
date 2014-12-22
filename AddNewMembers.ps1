@@ -3,11 +3,11 @@
 ### DATE UPDATED: 12/01/2014
 ###
 ### DEPENDENCIES: CreateAcuUser.ps1
-###               fimtoswe.csv
+###               fimtoENV.csv
 ###
-### AUTHOR:       Jesse Pifer (v-jpifer@microsoft.com)
+### AUTHOR:       Jesse Pifer
 ###
-### DESCRIPTION:  Get list of users with ACU entitlements from FIM (fimtoswe.csv) and compare against
+### DESCRIPTION:  Get list of users with ACU entitlements from FIM (fimtoENV.csv) and compare against
 ###               current ACU users in ADUC. Any users with FIM ACU entitlements that do not exist in
 ###               ADUC are created and the username/password outputted to screen to be sent to user
 ###               via encrypted e-mail.
@@ -17,33 +17,33 @@ ipmo activedirectory
 
 $scriptpath = $MyInvocation.MyCommand.Path
 $dir = Split-Path $scriptpath
-$fromfim = Get-Content -Path "$dir\fimtoswe.csv"
+$fromfim = Get-Content -Path "$dir\fimtoENV.csv"
 $path = "$dir\toAD.csv"
 
 If ((Test-Path $path) -eq $true) { Clear-Content -Path $path }
 "{0},{1}" -f "ACU","Alias" | add-content -Path $path
 
-$ACUs = @("SWE TST ACU","SWE SEC ACU","SWE RWC ACU","SWE RSW ACU","SWE RSP ACU","SWE AZU ACU", "SWE IDT ACU", "SWE IMG ACU", "SWE PLT ACU","SWE REX ACU","SWE RFF ACU","SWE RLY ACU","SWE RNZ ACU","SWE ROD ACU")
+$ACUs = @("ENV TST ACU","ENV SEC ACU","ENV RWC ACU","ENV RSW ACU","ENV RSP ACU","ENV AZU ACU", "ENV IDT ACU", "ENV IMG ACU", "ENV PLT ACU","ENV REX ACU","ENV RFF ACU","ENV RLY ACU","ENV RNZ ACU","ENV ROD ACU")
 
 Foreach ($ACU in $ACUs)
 {
 
     Switch ($ACU)
         {
-        "SWE AZU ACU" {$acronym = "AZU"}
-        "SWE IDT ACU" {$acronym = "IDT"}
-        "SWE IMG ACU" {$acronym = "IMG"}
-        "SWE PLT ACU" {$acronym = "PLT"}
-        "SWE REX ACU" {$acronym = "REX"}
-        "SWE RFF ACU" {$acronym = "RFF"}
-        "SWE RLY ACU" {$acronym = "RLY"}
-        "SWE RNZ ACU" {$acronym = "RNZ"}
-        "SWE ROD ACU" {$acronym = "ROD"}
-        "SWE RSP ACU" {$acronym = "RSP"}
-        "SWE RSW ACU" {$acronym = "RSW"}
-        "SWE RWC ACU" {$acronym = "RWC"}
-        "SWE SEC ACU" {$acronym = "SEC"}
-        "SWE TST ACU" {$acronym = "TST"}
+        "ENV AZU ACU" {$acronym = "AZU"}
+        "ENV IDT ACU" {$acronym = "IDT"}
+        "ENV IMG ACU" {$acronym = "IMG"}
+        "ENV PLT ACU" {$acronym = "PLT"}
+        "ENV REX ACU" {$acronym = "REX"}
+        "ENV RFF ACU" {$acronym = "RFF"}
+        "ENV RLY ACU" {$acronym = "RLY"}
+        "ENV RNZ ACU" {$acronym = "RNZ"}
+        "ENV ROD ACU" {$acronym = "ROD"}
+        "ENV RSP ACU" {$acronym = "RSP"}
+        "ENV RSW ACU" {$acronym = "RSW"}
+        "ENV RWC ACU" {$acronym = "RWC"}
+        "ENV SEC ACU" {$acronym = "SEC"}
+        "ENV TST ACU" {$acronym = "TST"}
         }
 
     $ACUIndex = $fromfim.IndexOf($ACU)
@@ -56,7 +56,7 @@ Foreach ($ACU in $ACUs)
     {
         #Write-Host "Checking $name"
         $filter = "displayName -like `"$name`""
-        $alias = Get-ADUser -Filter $filter -SearchBase "OU=Managed,OU=Accounts,DC=swe,DC=prd,DC=msft,DC=net" | Select -ExpandProperty SamAccountName
+        $alias = Get-ADUser -Filter $filter -SearchBase "OU=Managed,OU=Accounts,DC=ENV,DC=prd,DC=msft,DC=net" | Select -ExpandProperty SamAccountName
    
         if (($alias -ne $null) -and (-not($alias -like "*_ratst*")))
         {
@@ -75,7 +75,7 @@ Foreach ($ACU in $ACUs)
         {
             if (-not($alias -like "*_ratst*"))
             {
-                Write-Host "$name has not created their basic SWE account" -ForegroundColor "RED"
+                Write-Host "$name has not created their basic ENV account" -ForegroundColor "RED"
             }
         }
 
@@ -99,7 +99,7 @@ if ($toCreate -ne $null)
 
 Write-Host "`n"
 
-$AzureTeams = @("SWE Azure BOX Team","SWE Azure BXA Team","SWE Azure BXT Team","SWE Azure BXC Team","SWE Azure DC On Call Engineers","SWE Azure SLAM On Call Engineers","SWE Azure SUE On Call Engineers")
+$AzureTeams = @("ENV Azure BOX Team","ENV Azure BXA Team","ENV Azure BXT Team","ENV Azure BXC Team","ENV On Call Engineers","ENV SLAM On Call Engineers","ENV SUE On Call Engineers")
 
 Foreach ($team in $AzureTeams)
 {
@@ -114,7 +114,7 @@ Foreach ($team in $AzureTeams)
     while ($name -ne "")
     {
         $filter = "displayName -like `"$name`""
-        $alias = Get-ADUser -Filter $filter -SearchBase "OU=Managed,OU=Accounts,DC=swe,DC=prd,DC=msft,DC=net" | Select -ExpandProperty SamAccountName
+        $alias = Get-ADUser -Filter $filter -SearchBase "OU=Managed,OU=Accounts,DC=ENV,DC=prd,DC=msft,DC=net" | Select -ExpandProperty SamAccountName
            
         if (($alias -ne $null) -and (-not($alias -like "*_ratst*")))
         {
@@ -137,7 +137,7 @@ Foreach ($team in $AzureTeams)
         {
             if (-not($alias -like "*_ratst*"))
             {
-                Write-Host "$name has not created their basic SWE account" -ForegroundColor "RED"
+                Write-Host "$name has not created their basic ENV account" -ForegroundColor "RED"
             }
         }
 
